@@ -8,46 +8,104 @@ import org.springframework.stereotype.Service
 @Service
 class BetService {
 
-    List<Bet> bets = [] // initialization List to save bets
+    /**
+     * initialization List to save bets
+     */
 
-    //add bet from users
+   private List<Bet> bets = []
 
-    List<Bet> addBet(Bet bet) {
+
+    /**
+     * add bet
+     * @param bet - model bet
+     * @return - model bet which saved to List bets
+     */
+
+    void addBet(Bet bet) {
+
+        log.info("receive bet from controller  : eventId - ${bet.eventId}, amount ${bet.amount}")
+
         bets.add(bet)
-        def allBets = bets.findAll{it.eventId}
+
         log.info("save bet : eventId - ${bet.eventId}, amount ${bet.amount}")
-        return allBets
+
     }
 
-    // get all bets from List bets
+    /**
+     * get all bets from List bets
+     * @return - List bets
+     */
 
     List<Bet> getAllBets () {
-        def allBets = bets.findAll{it.amount}
+
+        def allBets = bets.findAll()
+
+        log.info("give to user all bets")
+
         return allBets
     }
 
-    // get bet by id
+    /**
+     * get bet by event id
+     * @param eventId
+     * @return - bet with needed event id
+     */
+
 
     List<Bet> searchBetById (String eventId) {
+
+        log.info("receive from user  event id - ${eventId}")
+
         def foundBet =  bets.findAll{it.eventId == eventId}
+
+        if (!foundBet) {  throw new IllegalStateException("Not found event by id : ${eventId}")  }
+
+        log.info("give to user bet : event id - ${eventId}")
+
         return foundBet
     }
 
-    // update amount by id
+
+    /**
+     * update amount by id
+     * @param eventId
+     * @param amount
+     * @return - bet which was updated
+     */
 
     Bet updateAmount(String eventId, String amount) {
+
+        log.info("receive from user event id - ${eventId} new amount value -${amount}")
+
         def foundBetById = bets.find {it.eventId == eventId}
+
+        if ( !foundBetById) { throw new IllegalStateException("Not found bet  : ${eventId}") }
+
         foundBetById.amount = amount
+
         log.info( "change event name for : ${foundBetById.eventId}")
+
         return foundBetById
     }
 
-    // delete bet by id
+    /**
+     * delete bet by id
+     * @param eventId
+     * @return - success msg
+     */
 
-    Bet deleteBet (String eventId) {
+
+    void deleteBet (String eventId) {
+
+        log.info("receive from user id to delete bet : id- ${eventId}")
+
         def betToDelete = bets.find{it.eventId == eventId}
+
+        if ( !betToDelete) { throw new IllegalStateException("Not found bet  : ${eventId}") }
+
         bets.remove(betToDelete)
+
         log.info("Delete bet : id - ${betToDelete.eventId}")
-        return betToDelete
+
     }
 }

@@ -3,8 +3,9 @@ package com.riversoft.test.controller
 import com.riversoft.test.model.Event
 import com.riversoft.test.service.EventService
 import groovy.util.logging.Slf4j
-import jdk.nashorn.internal.ir.annotations.Ignore
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
-
+import javax.validation.Valid
 
 
 @Slf4j
@@ -27,35 +28,50 @@ class EventController {
 
 
     @PostMapping
-    List<Event> addEvent(@RequestBody Event event)  {
+    String addEvent(@RequestBody @Valid Event event) {
+
         log.info("received event : id - ${event.eventId}, name - ${event.eventName}")
-        return eventService.addEvent(event)
+
+        eventService.addEvent(event)
+
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body("save event -${event.eventName} ${event.eventId}")
     }
 
 
     @GetMapping
-    List<Event> getEvents ( @Ignore String eventId) {
+    List<Event> getEvents(@RequestParam(required = false) String eventId) {
 
         if (eventId) {
-            log.info("give to client event by id ${eventId}")
+
+            log.info("receive to client event by id ${eventId}")
+
             return eventService.searchEventById(eventId)
+
         } else {
+
             log.info("give to client all events")
-           return  eventService.getAllEvents()
+
+            return eventService.getAllEvents()
         }
     }
 
 
-    @PutMapping("{eventId}")
+    @PutMapping ("/{eventId}")
     Event updateEvent(@RequestBody Event event, @PathVariable String eventId) {
+
         log.info("received update name by id : ${eventId}")
-        return eventService.updateEventName(eventId,event.eventName)
+
+        return eventService.updateEventName(eventId, event.eventName)
     }
 
 
     @DeleteMapping
-    Event  deleteEvent(@RequestParam String eventId) {
+    String deleteEvent(@RequestParam String eventId) {
+
         log.info("received event id to delete this event")
-        return eventService.deleteEvent(eventId)
+
+        eventService.deleteEvent(eventId)
+
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body("Delete by event id :${eventId} was successful")
     }
 }

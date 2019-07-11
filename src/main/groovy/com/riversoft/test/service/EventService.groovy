@@ -9,48 +9,104 @@ import org.springframework.stereotype.Service
 @Service
 class EventService {
 
-    List<Event> events = [] // initialization List to save events
+    /**
+     * initialization List to save events
+     */
 
-    // add event to object
+    List<Event> events = []
 
-     List<Event> addEvent (Event event) {
+
+    /**
+     * add event to object
+     * @param event
+     */
+
+     void addEvent (Event event) {
+
+        log.info("receive from user event   : id - ${event.eventId}, name - ${event.eventName}")
+
         events.add(event)
-        def allEvents = events.each{it.eventName}
+
         log.info("save event : id - ${event.eventId}, name - ${event.eventName}")
-        log.info("All events : ${allEvents.eventName}")
-        return allEvents
+
     }
 
-    // get all events from List events
+    /**
+     * get all events from List events
+     * @return - all events
+     */
 
     List<Event> getAllEvents () {
-        def allEvents = events.findAll{it.eventName}
+
+        def allEvents = events.findAll()
+
+        log.info("give user all events")
+
         return allEvents
     }
 
-    // get event by id
+    /**
+     * get event by id
+     * @param eventId
+     * @return - event by found id
+     */
 
     List<Event> searchEventById (String eventId) {
+
+       log.info("receive from user event id : ${eventId}")
+
        def foundEvent =  events.findAll{it.eventId == eventId}
+
+       if (!foundEvent) { throw  new IllegalStateException("Not found event by id: ${eventId}") }
+
+       log.info("give user event  by  id : ${eventId}")
+
        return foundEvent
     }
 
-    // update event name by id
+
+    /**
+     * update event name by id
+     * @param eventId
+     * @param eventName
+     * @return - success message
+     */
+
 
     Event updateEventName(String eventId,String eventName) {
+
+        log.info("receive from user event id : ${eventId} new event name value ${eventName}")
+
         def foundEventById = events.find {it.eventId == eventId}
+
+        if (!foundEventById) { throw new IllegalStateException("Not found event by id :${eventId}") }
+
         foundEventById.eventName = eventName
+
         log.info( "change event name for : ${foundEventById.eventId}")
+
         return foundEventById
     }
 
-    // Delete event by id
 
-    Event deleteEvent (String eventId) {
+    /**
+     * delete event by id
+     * @param eventId
+     * @return  - success message
+     */
+
+    void deleteEvent (String eventId) {
+
+        log.info("receive from user event to delete by id : ${eventId}")
+
         def eventToDelete = events.find{it.eventId == eventId}
+
+        if(!eventToDelete){ throw new IllegalStateException("Not found event to delete by id : ${eventId}") }
+
         events.remove(eventToDelete)
+
         log.info("Delete event : id - ${eventToDelete.eventId}")
-        return eventToDelete
+
     }
 }
 
