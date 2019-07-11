@@ -18,3 +18,5 @@ class MvcMy implements WebMvcConfigurer {
                 .addResourceLocations("classpath:/META-INF/resources/webjars/");
     }
 }
+
+
